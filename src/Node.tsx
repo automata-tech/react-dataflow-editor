@@ -4,6 +4,9 @@ import { DragBehavior } from "d3-drag"
 
 import type { Focus, Kinds, Node, Schema } from "./state.js"
 import {
+	imageMargin,
+	imageWidth,
+	imageHeight,
 	makeClipPath,
 	nodeHeaderHeight,
 	nodeMarginX,
@@ -30,7 +33,7 @@ export interface GraphNodeProps<S extends Schema> {
 }
 
 export function GraphNode<S extends Schema>(props: GraphNodeProps<S>) {
-	const { name, backgroundColor, inputs, outputs } = props.kinds[
+	const { name, backgroundColor, inputs, outputs, img } = props.kinds[
 		props.node.kind
 	]
 
@@ -74,6 +77,7 @@ export function GraphNode<S extends Schema>(props: GraphNodeProps<S>) {
 			<text stroke="none" x={8} y={18}>
 				{name}
 			</text>
+			<image x={nodeWidth/2 - imageWidth/2} y={nodeHeaderHeight+imageMargin} height={imageHeight} width={imageWidth} href={img}></image>
 			{props.children}
 			<line
 				stroke={borderColor}

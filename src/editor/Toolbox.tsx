@@ -13,8 +13,8 @@ export interface PreviewNodeProps<S extends Schema> {
 export function PreviewNode<S extends Schema>(props: PreviewNodeProps<S>) {
 	const [_, drag] = useDrag({ type: "node", item: { kind: props.kind } })
 	const context = useContext(CanvasContext)
-	const { borderColor } = context.options
-	const { backgroundColor, name } = props.kinds[props.kind]
+	const { borderColor, toolBoxImgWidth } = context.options
+	const { backgroundColor, name, img } = props.kinds[props.kind]
 	return (
 		<div
 			ref={drag}
@@ -39,6 +39,7 @@ export function PreviewNode<S extends Schema>(props: PreviewNodeProps<S>) {
 				}}
 			>
 				{name}
+				<img width={toolBoxImgWidth} src={img}></img>
 			</div>
 		</div>
 	)

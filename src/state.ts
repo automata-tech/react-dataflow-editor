@@ -5,6 +5,7 @@ export type Kind<I extends string, O extends string> = Readonly<{
 	inputs: Readonly<Record<I, null>>
 	outputs: Readonly<Record<O, null>>
 	backgroundColor: string
+	img: string
 }>
 
 export type Schema = Record<string, { inputs: string; outputs: string }>

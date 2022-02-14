@@ -27,7 +27,7 @@ export function GraphOutput<S extends Schema, K extends keyof S>(
 ) {
 	const transform = useMemo(() => {
 		const index = getOutputIndex(props.kinds, props.node.kind, props.output)
-		const offsetY = getPortOffsetY(index)
+		const offsetY = getPortOffsetY(index, props.kinds, props.node.kind)
 		return toTranslate([0, offsetY])
 	}, [])
 

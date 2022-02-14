@@ -30,7 +30,7 @@ export function GraphInput<S extends Schema, K extends keyof S>(
 ) {
 	const transform = useMemo(() => {
 		const index = getInputIndex(props.kinds, props.node.kind, props.input)
-		const offsetY = getPortOffsetY(index)
+		const offsetY = getPortOffsetY(index, props.kinds, props.node.kind)
 		return toTranslate([0, offsetY])
 	}, [])
 

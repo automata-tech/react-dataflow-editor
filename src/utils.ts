@@ -15,6 +15,9 @@ import type {
 import type { CanvasContext } from "./context.js"
 
 export const nodeWidth = 156
+export const imageWidth = 100
+export const imageHeight = 100
+export const imageMargin = 12
 export const nodeMarginX = 4
 export const nodeHeaderHeight = 24
 export const portRadius = 12
@@ -36,18 +39,35 @@ export const initialEditorState = <S extends Schema>(): EditorState<S> => ({
 	focus: null,
 })
 
-export function makeClipPath<S extends Schema>(
-	kinds: Kinds<S>,
-	kind: keyof S
-): string {
+const getMaxPorts = <S extends Schema>(kinds: Kinds<S>, kind: keyof S) => {
 	const { inputs, outputs } = kinds[kind]
 	const { length: inputCount } = Object.keys(inputs)
 	const { length: outputCount } = Object.keys(outputs)
+	return Math.max(inputCount, outputCount)
+}
 
-	const nodeHeight =
-		nodeHeaderHeight + portHeight * Math.max(inputCount, outputCount)
+const getNodeHeight = <S extends Schema>(
+	kinds: Kinds<S>,
+	kind: keyof S) => {
+	const { img } = kinds[kind]
+		
+	const imgHeight = img ? imageHeight : 0;
+
+	return nodeHeaderHeight + imgHeight + portHeight * getMaxPorts(kinds, kind)
+}
+
+export function makeClipPath<S extends Schema>(
+	kinds: Kinds<S>,
+	kind: keyof S,
+): string {
+	const { inputs, img } = kinds[kind]
+	const { length: inputCount } = Object.keys(inputs)
+
+	const nodeHeight = getNodeHeight(kinds, kind)
 
 	const path = [`M 0 0 V ${nodeHeaderHeight}`]
+
+	img && path.push(`V ${nodeHeight - getMaxPorts(kinds, kind) * portHeight}`)
 
 	for (let i = 0; i < inputCount; i++) {
 		path.push(inputPort)
@@ -73,10 +93,19 @@ export function place(
 
 export const toTranslate = ([x, y]: [number, number]) => `translate(${x}, ${y})`
 
-export function getPortOffsetY(index: number) {
+export function getPortOffsetY<S extends Schema>(index: number, kinds: Kinds<S>, kind: keyof S) {
 	if (index === -1) {
 		throw new Error("Invalid port offset index")
 	}
+
+	const nodeHeight = getNodeHeight(kinds, kind)
+	const { img } = kinds[kind]
+	const maxIndex = getMaxPorts(kinds, kind) - 1
+
+	if (img) {
+		return nodeHeight - maxIndex * portHeight - portMargin - portRadius + index * portHeight
+	}
+
 	return nodeHeaderHeight + index * portHeight + portMargin + portRadius
 }
 
@@ -115,7 +144,7 @@ export function getInputOffset<S extends Schema, K extends keyof S>(
 	input: GetInputs<S, K>
 ): [number, number] {
 	const index = getInputIndex(kinds, kind, input)
-	return [0, getPortOffsetY(index)]
+	return [0, getPortOffsetY(index, kinds, kind)]
 }
 
 export function getOutputOffset<S extends Schema, K extends keyof S>(
@@ -124,7 +153,7 @@ export function getOutputOffset<S extends Schema, K extends keyof S>(
 	output: GetOutputs<S, K>
 ): [number, number] {
 	const index = getOutputIndex(kinds, kind, output)
-	return [nodeWidth, getPortOffsetY(index)]
+	return [nodeWidth, getPortOffsetY(index, kinds, kind)]
 }
 
 export function getSourcePosition<S extends Schema>(

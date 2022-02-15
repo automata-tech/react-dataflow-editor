@@ -6,6 +6,7 @@ import type {
 	GetInputs,
 	GetOutputs,
 	Position,
+	GetParams,
 } from "./state.js"
 
 import type { EditorAction } from "./actions.js"
@@ -181,6 +182,10 @@ function createInitialNode<S extends Schema>(
 	kind: keyof S,
 	position: Position
 ): Node<S> {
+	const params = Object.fromEntries(
+		Object.keys(kinds[kind].params).map((param) => [param, null])
+	) as Record<GetParams<S>, null | string>
+
 	const inputs = Object.fromEntries(
 		Object.keys(kinds[kind].inputs).map((input) => [input, null])
 	) as Record<GetInputs<S>, null | string>
@@ -191,5 +196,5 @@ function createInitialNode<S extends Schema>(
 		)
 	) as Record<GetOutputs<S>, string[]>
 
-	return { id, kind, position, inputs, outputs }
+	return { id, kind, position, inputs, outputs, params }
 }

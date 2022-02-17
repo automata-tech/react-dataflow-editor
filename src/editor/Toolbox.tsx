@@ -29,6 +29,7 @@ export function PreviewNode<S extends Schema>(props: PreviewNodeProps<S>) {
 				borderStyle: "solid",
 				borderColor: borderColor,
 				backgroundColor: backgroundColor,
+				flexDirection: "column",
 			}}
 		>
 			<div
@@ -39,8 +40,8 @@ export function PreviewNode<S extends Schema>(props: PreviewNodeProps<S>) {
 				}}
 			>
 				{name}
-				<img width={toolBoxImgWidth} src={img}></img>
 			</div>
+			<img width={toolBoxImgWidth} src={img}></img>
 		</div>
 	)
 }

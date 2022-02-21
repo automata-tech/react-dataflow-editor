@@ -8,7 +8,9 @@
 	],
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"build": "tsc --watch",
+		"build": "tsc",
+		"prepare": "npm run build",
+		"install": "npm run build",
 		"build-watch": "tsc --watch"
 	},
 	"repository": {

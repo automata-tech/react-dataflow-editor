@@ -22,7 +22,7 @@ export const createNode = <S extends Schema>(
 	position: Position
 ): CreateNodeAction<S> => ({
 	type: "node/create",
-	id: nanoid(10),
+	id: `${kind}_${nanoid(10)}`,
 	kind,
 	position,
 })

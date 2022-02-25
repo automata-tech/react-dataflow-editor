@@ -7,6 +7,7 @@ import type {
 	GetOutputs,
 	Position,
 	GetParams,
+	Param
 } from "./state.js"
 
 import type { EditorAction } from "./actions.js"
@@ -36,6 +37,14 @@ export function reduce<S extends Schema>(
 	} else if (action.type === "node/move") {
 		const { id, position } = action
 		const node = { ...state.nodes[id], position }
+		const nodes = { ...state.nodes, [id]: node }
+		return { ...state, nodes, focus: { element: "node", id } }
+	} else if (action.type === "node/param") {
+		const { id, param }: {id: string, param: GetParams<S>} = action
+		const params = state.nodes[id].params
+		const newParamEntry = {...params[param], value: action.value}
+		const newParams = {...params, ...{[param]: newParamEntry}}
+		const node = { ...state.nodes[id], params: {...newParams}}
 		const nodes = { ...state.nodes, [id]: node }
 		return { ...state, nodes, focus: { element: "node", id } }
 	} else if (action.type === "node/delete") {
@@ -183,8 +192,8 @@ function createInitialNode<S extends Schema>(
 	position: Position
 ): Node<S> {
 	const params = Object.fromEntries(
-		Object.keys(kinds[kind].params).map((param) => [param, null])
-	) as Record<GetParams<S>, null | string>
+		Object.keys(kinds[kind].params).map((param: GetParams<S>) => [param, kinds[kind].params[param]])
+	) as Record<GetParams<S>, null | Param>
 
 	const inputs = Object.fromEntries(
 		Object.keys(kinds[kind].inputs).map((input) => [input, null])

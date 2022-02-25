@@ -10,6 +10,7 @@ import {
 	nodeMarginX,
 	portRadius,
 	toTranslate,
+	fontSize
 } from "./utils.js"
 import { OutputDragSubject } from "./outputDrag.js"
 import { CanvasContext } from "./context.js"
@@ -59,6 +60,7 @@ export function GraphOutput<S extends Schema, K extends keyof S>(
 				stroke="none"
 				x={-portRadius - nodeMarginX}
 				dominantBaseline="middle"
+				fontSize={fontSize}
 			>
 				{props.output}
 			</text>

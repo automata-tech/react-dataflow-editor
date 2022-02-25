@@ -17,8 +17,10 @@ import {
 import { CanvasContext } from "./context.js"
 
 import { GraphInput } from "./Input.js"
+import { GraphParam } from "./Param.js"
 import { GraphOutput } from "./Output.js"
 import { InputDragSubject } from "./inputDrag.js"
+import { ParamUpdateBehaviour } from "./paramUpdate"
 import { OutputDragSubject } from "./outputDrag.js"
 import { NodeDragSubject } from "./nodeDrag.js"
 
@@ -29,11 +31,12 @@ export interface GraphNodeProps<S extends Schema> {
 	nodeDrag?: DragBehavior<SVGGElement, undefined, NodeDragSubject>
 	inputDrag?: DragBehavior<SVGCircleElement, unknown, InputDragSubject<S>>
 	outputDrag?: DragBehavior<SVGCircleElement, unknown, OutputDragSubject<S>>
+	paramUpdate?: ParamUpdateBehaviour
 	children?: React.ReactNode
 }
 
 export function GraphNode<S extends Schema>(props: GraphNodeProps<S>) {
-	const { name, backgroundColor, inputs, outputs, img } = props.kinds[
+	const { name, backgroundColor, inputs, outputs, img, params } = props.kinds[
 		props.node.kind
 	]
 
@@ -96,6 +99,17 @@ export function GraphNode<S extends Schema>(props: GraphNodeProps<S>) {
 						node={props.node}
 						input={input}
 						inputDrag={props.inputDrag}
+					/>
+				))}
+			</g>
+			<g className="params">
+				{Object.keys(params).map((param) => (
+					<GraphParam<S, keyof S>
+						key={param}
+						kinds={props.kinds}
+						node={props.node}
+						param={param}
+						paramUpdate={props.paramUpdate}
 					/>
 				))}
 			</g>

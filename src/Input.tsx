@@ -15,6 +15,7 @@ import {
 	nodeMarginX,
 	portRadius,
 	toTranslate,
+	fontSize
 } from "./utils.js"
 
 export interface GraphInputProps<S extends Schema, K extends keyof S> {
@@ -72,6 +73,7 @@ export function GraphInput<S extends Schema, K extends keyof S>(
 				stroke="none"
 				x={portRadius + nodeMarginX}
 				dominantBaseline="middle"
+				fontSize={fontSize}
 			>
 				{props.input}
 			</text>

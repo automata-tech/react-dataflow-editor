@@ -6,6 +6,7 @@ import type {
 	Kinds,
 	GetInputs,
 	GetOutputs,
+	GetParams,
 	EditorState,
 	Target,
 	Source,
@@ -14,6 +15,7 @@ import type {
 } from "./state.js"
 import type { CanvasContext } from "./context.js"
 
+export const fontSize = 15
 export const nodeWidth = 156
 export const imageWidth = 100
 export const imageHeight = 100
@@ -24,6 +26,11 @@ export const portRadius = 12
 export const portMargin = 12
 export const portHeight = portRadius * 2 + portMargin * 2
 export const canvasPaddingRight = 480
+export const paramHeight = 24
+export const paramWidth = nodeWidth / 3
+export const paramMargin = 10
+export const paramTextInputMargin = 10
+export const paramHeightWithMargin = paramHeight + fontSize + paramTextInputMargin + paramMargin
 
 const inputPortArc = `a ${portRadius} ${portRadius} 0 0 1 0 ${2 * portRadius}`
 const inputPort = `v ${portMargin} ${inputPortArc} v ${portMargin}`
@@ -39,21 +46,20 @@ export const initialEditorState = <S extends Schema>(): EditorState<S> => ({
 	focus: null,
 })
 
-const getMaxPorts = <S extends Schema>(kinds: Kinds<S>, kind: keyof S) => {
-	const { inputs, outputs } = kinds[kind]
-	const { length: inputCount } = Object.keys(inputs)
-	const { length: outputCount } = Object.keys(outputs)
-	return Math.max(inputCount, outputCount)
-}
 
 const getNodeHeight = <S extends Schema>(
 	kinds: Kinds<S>,
 	kind: keyof S) => {
-	const { img } = kinds[kind]
+	const { inputs, outputs, img, params } = kinds[kind]
+	const { length: paramCount } = Object.keys(params)
+	const { length: outputCount } = Object.keys(outputs)
+	const { length: inputCount } = Object.keys(inputs)
 		
-	const imgHeight = img ? imageHeight : 0;
+	const nodeAndImg = nodeHeaderHeight + (img ? imageHeight : 0)
+	const inputSide = nodeAndImg + (portHeight * inputCount) + (paramCount * paramHeightWithMargin)
+	const outputSide = nodeAndImg + portHeight * outputCount
 
-	return nodeHeaderHeight + imgHeight + portHeight * getMaxPorts(kinds, kind)
+	return Math.max(inputSide, outputSide)
 }
 
 export function makeClipPath<S extends Schema>(
@@ -67,7 +73,7 @@ export function makeClipPath<S extends Schema>(
 
 	const path = [`M 0 0 V ${nodeHeaderHeight}`]
 
-	img && path.push(`V ${nodeHeight - getMaxPorts(kinds, kind) * portHeight}`)
+	img && path.push(`V ${nodeHeaderHeight + imageHeight}`)
 
 	for (let i = 0; i < inputCount; i++) {
 		path.push(inputPort)
@@ -98,15 +104,24 @@ export function getPortOffsetY<S extends Schema>(index: number, kinds: Kinds<S>,
 		throw new Error("Invalid port offset index")
 	}
 
-	const nodeHeight = getNodeHeight(kinds, kind)
 	const { img } = kinds[kind]
-	const maxIndex = getMaxPorts(kinds, kind) - 1
+	const portOffset = nodeHeaderHeight + portMargin + portRadius + index * portHeight
 
 	if (img) {
-		return nodeHeight - maxIndex * portHeight - portMargin - portRadius + index * portHeight
+		return portOffset + imageHeight
 	}
 
-	return nodeHeaderHeight + index * portHeight + portMargin + portRadius
+	return portOffset
+}
+
+export function getParamOffsetY<S extends Schema>(index: number, kinds: Kinds<S>, kind: keyof S) {
+	if (index === -1) {
+		throw new Error("Invalid port offset index")
+	}
+
+	const { inputs } = kinds[kind]
+	const { length: inputCount } = Object.keys(inputs)
+	return getPortOffsetY(index, kinds, kind) + inputCount * portHeight
 }
 
 const keyIndexCache = new WeakMap<
@@ -131,6 +146,12 @@ export const getInputIndex = <S extends Schema, K extends keyof S>(
 	kind: K,
 	input: GetInputs<S, K>
 ) => getKeyIndex(kinds[kind].inputs, input)
+
+export const getParamIndex = <S extends Schema, K extends keyof S>(
+	kinds: Kinds<S>,
+	kind: K,
+	param: GetParams<S, K>
+) => getKeyIndex(kinds[kind].params, param)
 
 export const getOutputIndex = <S extends Schema, K extends keyof S>(
 	kinds: Kinds<S>,

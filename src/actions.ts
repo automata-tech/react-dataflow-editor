@@ -1,9 +1,10 @@
 import { nanoid } from "nanoid"
-import type { Focus, Position, Schema, Source, Target } from "./state.js"
+import type { Focus, Position, Schema, Source, Target, GetParams } from "./state.js"
 
 export type EditorAction<S extends Schema> =
 	| CreateNodeAction<S>
 	| MoveNodeAction
+	| ModifyParamAction
 	| DeleteNodeAction
 	| CreateEdgeAction<S>
 	| MoveEdgeAction<S>
@@ -25,6 +26,20 @@ export const createNode = <S extends Schema>(
 	id: `${kind}_${nanoid(10)}`,
 	kind,
 	position,
+})
+
+export type ModifyParamAction = {
+	type: "node/param"
+	id: string
+	param: GetParams<Schema>
+	value: string
+}
+
+export const modifyParam = <S extends Schema, K extends keyof S>(id: string, param: GetParams<S, K>, value: string): ModifyParamAction => ({
+	type: "node/param",
+	id,
+	param,
+	value
 })
 
 export type MoveNodeAction = {

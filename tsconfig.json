@@ -3,8 +3,8 @@
 	"compilerOptions": {
 		"outDir": "lib",
 		"strict": true,
-		"module": "ES6",
-		"target": "ES2020",
+		"module": "commonjs",
+		"target": "ES2015",
 		"skipLibCheck": true,
 		"sourceMap": false,
 		"declaration": true,

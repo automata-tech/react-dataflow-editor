@@ -12,6 +12,6 @@
 		"jsx": "react",
 		"moduleResolution": "node",
 		"esModuleInterop": true,
-    "lib": ["es2020"]
+    "lib": ["dom", "es2020"]
 	}
 }

@@ -22,6 +22,7 @@ export interface GraphInputProps<S extends Schema, K extends keyof S> {
 	kinds: Kinds<S>
 	focus: Focus | null
 	node: Node<S, K>
+	label: string
 	input: GetInputs<S, K>
 	inputDrag?: DragBehavior<SVGCircleElement, unknown, InputDragSubject<S>>
 }
@@ -29,7 +30,7 @@ export interface GraphInputProps<S extends Schema, K extends keyof S> {
 export function GraphInput<S extends Schema, K extends keyof S>(
 	props: GraphInputProps<S, K>
 ) {
-	const { kinds, node, input, inputDrag, focus } = props
+	const { kinds, node, input, inputDrag, focus, label } = props
 	const transform = useMemo(() => {
 		const index = getInputIndex(kinds, node.kind, input)
 		const offsetY = getPortOffsetY(index, kinds, node.kind)
@@ -76,7 +77,7 @@ export function GraphInput<S extends Schema, K extends keyof S>(
 				dominantBaseline="middle"
 				fontSize={fontSize}
 			>
-				{kinds[node.kind].inputs[input].label}
+				{label}
 			</text>
 			<circle
 				ref={ref}

@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useMemo } from "react"
 import { select } from "d3-selection"
 import { DragBehavior } from "d3-drag"
 
-import type { Focus, Kinds, Node, Schema } from "./state.js"
+import type { Focus, Kinds, Node, Schema, GetInputs, GetParams, GetOutputs} from "./state.js"
 import {
 	imageMargin,
 	imageWidth,
@@ -91,36 +91,39 @@ export function GraphNode<S extends Schema>(props: GraphNodeProps<S>) {
 				y2={nodeHeaderHeight}
 			/>
 			<g className="inputs">
-				{Object.keys(inputs).map((input) => (
+				{Object.keys(inputs).map((input: GetInputs<S, keyof S>) => (
 					<GraphInput<S, keyof S>
 						key={input}
 						kinds={props.kinds}
 						focus={props.focus}
 						node={props.node}
+						label={inputs[input].label}
 						input={input}
 						inputDrag={props.inputDrag}
 					/>
 				))}
 			</g>
 			<g className="params">
-				{Object.keys(params).map((param) => (
+				{Object.keys(params).map((param: GetParams<S, keyof S>) => (
 					<GraphParam<S, keyof S>
 						key={param}
 						kinds={props.kinds}
 						node={props.node}
 						param={param}
+						label={params[param].label}
 						paramUpdate={props.paramUpdate}
 					/>
 				))}
 			</g>
 			<g className="outputs" transform="translate(156, 0)">
-				{Object.keys(outputs).map((output) => (
+				{Object.keys(outputs).map((output: GetOutputs<S, keyof S>) => (
 					<GraphOutput<S, keyof S>
 						key={output}
 						kinds={props.kinds}
 						focus={props.focus}
 						node={props.node}
 						output={output}
+						label={outputs[output].label}
 						outputDrag={props.outputDrag}
 					/>
 				))}

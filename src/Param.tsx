@@ -18,13 +18,14 @@ export interface GraphParamProps<S extends Schema, K extends keyof S> {
 	kinds: Kinds<S>
 	node: Node<S, K>
 	param: GetParams<S, K>
+	label: string
 	paramUpdate: ParamUpdateBehaviour | undefined
 }
 
 export function GraphParam<S extends Schema, K extends keyof S>(
 	props: GraphParamProps<S, K>
 ) {
-	const {kinds, node, param, paramUpdate} = props
+	const {kinds, node, param, paramUpdate, label} = props
 	const value = node.params[param] ?? ''
 	const transform = useMemo(() => {
 		const index = getParamIndex(kinds, node.kind, param)
@@ -52,7 +53,7 @@ export function GraphParam<S extends Schema, K extends keyof S>(
 			fontSize={fontSize}
 			dominantBaseline="middle"
 			>
-			{kinds[node.kind].params[param].label}
+			{label}
 		</text>
 		
 		{/* TODO: inherit width and height of bounding box from input element */}

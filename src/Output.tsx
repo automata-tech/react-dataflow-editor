@@ -20,13 +20,14 @@ export interface GraphOutputProps<S extends Schema, K extends keyof S> {
 	focus: Focus | null
 	node: Node<S, K>
 	output: GetOutputs<S, K>
+	label: string
 	outputDrag?: DragBehavior<SVGCircleElement, unknown, OutputDragSubject<S>>
 }
 
 export function GraphOutput<S extends Schema, K extends keyof S>(
 	props: GraphOutputProps<S, K>
 ) {
-	const { kinds, node, output, outputDrag, focus} = props
+	const { kinds, node, output, outputDrag, focus, label} = props
 	const transform = useMemo(() => {
 		const index = getOutputIndex(kinds, node.kind, output)
 		const offsetY = getPortOffsetY(index, kinds, node.kind)
@@ -63,7 +64,7 @@ export function GraphOutput<S extends Schema, K extends keyof S>(
 				dominantBaseline="middle"
 				fontSize={fontSize}
 			>
-				{kinds[node.kind].outputs[output].label}
+				{label}
 			</text>
 			<circle
 				ref={ref}

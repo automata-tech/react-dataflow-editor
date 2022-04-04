@@ -18,10 +18,6 @@ import type { CanvasContext } from "./context.js"
 
 export const fontSize = 15
 export const nodeWidth = 156
-export const imageWidth = 100
-export const imageHeight = 100
-export const imageMargin = 12
-export const nodeMarginX = 4
 export const nodeHeaderHeight = 24
 export const portRadius = 12
 export const portMargin = 12
@@ -32,6 +28,15 @@ export const paramWidth = nodeWidth / 3
 export const paramMargin = 10
 export const paramTextInputMargin = 10
 export const paramHeightWithMargin = paramHeight + fontSize + paramTextInputMargin + paramMargin
+export const dropDownHeight = 24
+export const dropDownWidth = nodeWidth * 0.9
+export const dropDownMarginY = 12
+export const dropDownMarginX = 6
+export const imageWidth = 100
+export const imageHeight = 100
+export const imageMargin = 12 + 2 * dropDownMarginY
+export const nodeMarginX = 4
+
 
 const inputPortArc = `a ${portRadius} ${portRadius} 0 0 1 0 ${2 * portRadius}`
 const inputPort = `v ${portMargin} ${inputPortArc} v ${portMargin}`
@@ -47,7 +52,6 @@ export const initialEditorState = <S extends Schema>(): EditorState<S> => ({
 	focus: null,
 })
 
-
 const getNodeHeight = <S extends Schema>(
 	kinds: Kinds<S>,
 	kind: keyof S) => {
@@ -56,7 +60,7 @@ const getNodeHeight = <S extends Schema>(
 	const { length: outputCount } = Object.keys(outputs)
 	const { length: inputCount } = Object.keys(inputs)
 		
-	const nodeAndImg = nodeHeaderHeight + (img ? imageHeight : 0)
+	const nodeAndImg = nodeHeaderHeight + (img ? imageHeight : 0) + dropDownHeight
 	const inputSide = nodeAndImg + (portHeight * inputCount) + (paramCount * paramHeightWithMargin)
 	const outputSide = nodeAndImg + portHeight * outputCount
 
@@ -72,9 +76,9 @@ export function makeClipPath<S extends Schema>(
 
 	const nodeHeight = getNodeHeight(kinds, kind)
 
-	const path = [`M 0 0 V ${nodeHeaderHeight}`]
+	const path = [`M 0 0 V ${nodeHeaderHeight + dropDownHeight}`]
 
-	img && path.push(`V ${nodeHeaderHeight + imageHeight}`)
+	img && path.push(`V ${nodeHeaderHeight + imageHeight + dropDownHeight}`)
 
 	for (let i = 0; i < inputCount; i++) {
 		path.push(inputPort)
@@ -109,10 +113,10 @@ export function getPortOffsetY<S extends Schema>(index: number, kinds: Kinds<S>,
 	const portOffset = nodeHeaderHeight + portMargin + portRadius + index * portHeight
 
 	if (img) {
-		return portOffset + imageHeight
+		return portOffset + imageHeight + dropDownHeight
 	}
 
-	return portOffset
+	return portOffset + dropDownHeight
 }
 
 export function getParamOffsetY<S extends Schema>(index: number, kinds: Kinds<S>, kind: keyof S) {
@@ -292,3 +296,4 @@ export function getCanvasWidth<S extends Schema>(
 	)
 	return canvasPaddingRight + options.unit * max
 }
+

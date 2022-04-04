@@ -49,10 +49,10 @@ export function Editor<S extends Schema>(props: EditorProps<S>) {
 	const uniqueKinds = Object.keys(props.kinds).reduce(
 		(prev, curr) => {
 			const group = props.kinds[curr].group
-			if (usedKinds.has(group)) {
+			if (usedKinds.has(group.archetype)) {
 				return prev
 			}
-			usedKinds.add(group)
+			usedKinds.add(group.archetype)
 			return {...prev, [curr]: props.kinds[curr]}
 		},
 		{}

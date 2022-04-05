@@ -52,7 +52,7 @@ export interface ToolboxProps<S extends Schema> {
 
 export function Toolbox<S extends Schema>(props: ToolboxProps<S>) {
 	return (
-		<div style={{ display: "flex" }} className="toolbox">
+		<div style={{ display: "flex", overflow: "auto" }} className="toolbox">
 			{Object.keys(props.kinds).map((key) => {
 				const kind = key as keyof S
 				return <PreviewNode key={key} kind={kind} kinds={props.kinds} />

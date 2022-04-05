@@ -27,6 +27,7 @@ import { InputDragSubject } from "./inputDrag.js"
 import { ParamUpdateBehaviour } from "./paramUpdate"
 import { OutputDragSubject } from "./outputDrag.js"
 import { NodeDragSubject } from "./nodeDrag.js"
+import { NodeUpdateBehaviour } from "./nodeUpdate.js"
 
 export interface GraphNodeProps<S extends Schema> {
 	kinds: Kinds<S>
@@ -36,6 +37,7 @@ export interface GraphNodeProps<S extends Schema> {
 	inputDrag?: DragBehavior<SVGCircleElement, unknown, InputDragSubject<S>>
 	outputDrag?: DragBehavior<SVGCircleElement, unknown, OutputDragSubject<S>>
 	paramUpdate?: ParamUpdateBehaviour
+	actionDropDown?: NodeUpdateBehaviour
 	children?: React.ReactNode
 }
 

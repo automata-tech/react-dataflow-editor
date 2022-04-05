@@ -10,6 +10,7 @@ import { GraphEdge } from "../Edge.js"
 import { makeInputDragBehavior } from "../inputDrag.js"
 import { makeOutputDragBehavior } from "../outputDrag.js"
 import { makeNodeDragBehavior } from "../nodeDrag.js"
+import { makenodeUpdateBehaviour } from "../nodeUpdate.js"
 import { makeParamUpdateBehavior } from "../paramUpdate"
 
 import { getCanvasWidth, nodeWidth, portRadius, snap } from "../utils.js"
@@ -51,6 +52,10 @@ export function Canvas<S extends Schema>(props: CanvasProps<S>) {
 
 	const outputDrag = useMemo(() => {
 		return makeOutputDragBehavior(context, props.kinds, props.dispatch)
+	}, [])
+
+	const nodeUpdate = useMemo(() => {
+		return makenodeUpdateBehaviour(context, props.kinds, props.dispatch)
 	}, [])
 
 	const paramUpdate = useMemo(() => {
@@ -105,6 +110,7 @@ export function Canvas<S extends Schema>(props: CanvasProps<S>) {
 							inputDrag={inputDrag}
 							outputDrag={outputDrag}
 							paramUpdate={paramUpdate}
+							actionDropDown={nodeUpdate}
 						>
 							<text
 								stroke="none"

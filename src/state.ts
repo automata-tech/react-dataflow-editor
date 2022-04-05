@@ -3,8 +3,7 @@ export type Port = {label: string, value: string}
 
 export type Kind<P extends string, I extends string, O extends string> = Readonly<{
 	name: string
-	group: string
-	groupAction: string
+	group: { archetype: string, action: string}
 	inputs: Readonly<Record<I, Port>>
 	params: Readonly<Record<P, Port>>
 	outputs: Readonly<Record<O, Port>>

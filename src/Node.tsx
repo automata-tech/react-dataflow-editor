@@ -13,6 +13,10 @@ import {
 	nodeWidth,
 	place,
 	toTranslate,
+	dropDownHeight,
+	dropDownMarginY,
+	dropDownMarginX,
+	dropDownWidth
 } from "./utils.js"
 import { CanvasContext } from "./context.js"
 
@@ -36,9 +40,11 @@ export interface GraphNodeProps<S extends Schema> {
 }
 
 export function GraphNode<S extends Schema>(props: GraphNodeProps<S>) {
-	const { name, backgroundColor, inputs, outputs, img, params } = props.kinds[
+	const { group, backgroundColor, inputs, outputs, img, params } = props.kinds[
 		props.node.kind
 	]
+	const allKindsFromOneGroup = Object.keys(props.kinds).filter(k => props.kinds[k].group === group)
+
 
 	const clipPath = useMemo(() => makeClipPath(props.kinds, props.node.kind), [])
 
@@ -78,9 +84,14 @@ export function GraphNode<S extends Schema>(props: GraphNodeProps<S>) {
 		>
 			<path fill={backgroundColor} d={clipPath} />
 			<text stroke="none" x={8} y={18}>
-				{name}
+				{group}
 			</text>
 			<image x={nodeWidth/2 - imageWidth/2} y={nodeHeaderHeight+imageMargin} height={imageHeight} width={imageWidth} href={img}></image>
+			<foreignObject x={dropDownMarginX} y={nodeHeaderHeight + dropDownMarginY} width={dropDownWidth} height={dropDownHeight}>
+				<select style={{width: dropDownWidth}}>
+					{allKindsFromOneGroup.map(a => <option key={a} >{props.kinds[a].group.action}</option>)}
+				</select>
+			</foreignObject>
 			{props.children}
 			<line
 				stroke={borderColor}

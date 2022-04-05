@@ -29,11 +29,13 @@ export function reduce<S extends Schema>(
 	action: EditorAction<S>
 ): EditorState<S> {
 	if (action.type === "node/create") {
-		const { id, kind, position } = action
-		const nodes = { ...state.nodes }
-		nodes[id] = createInitialNode(kinds, id, kind, position)
-		return { ...state, nodes, focus: { element: "node", id } }
+		return createNode(kinds, state, action)
 	} else if (action.type === "node/move") {
+		const { id, position } = action
+		const node = { ...state.nodes[id], position }
+		const nodes = { ...state.nodes, [id]: node }
+		return { ...state, nodes, focus: { element: "node", id } }
+	} else if (action.type === "node/update") {
 		const { id, position } = action
 		const node = { ...state.nodes[id], position }
 		const nodes = { ...state.nodes, [id]: node }
@@ -46,48 +48,7 @@ export function reduce<S extends Schema>(
 		const nodes = { ...state.nodes, [id]: node }
 		return { ...state, nodes, focus: { element: "node", id } }
 	} else if (action.type === "node/delete") {
-		const { id } = action
-		const { kind, inputs, outputs } = state.nodes[id]
-		const nodes = { ...state.nodes }
-		const edges = { ...state.edges }
-		for (const input of forInputs(kinds, kind)) {
-			const edgeId: null | string = inputs[input]
-			if (edgeId !== null) {
-				const {
-					source: { id: sourceId, output },
-				} = edges[edgeId]
-				delete edges[edgeId]
-				const source = nodes[sourceId]
-				const outputs = new Set(source.outputs[output])
-				outputs.delete(edgeId)
-				nodes[sourceId] = {
-					...source,
-					outputs: { ...source.outputs, [output]: Array.from(outputs) },
-				}
-			}
-		}
-
-		for (const output of forOutputs(kinds, kind)) {
-			for (const edgeId of outputs[output]) {
-				const {
-					target: { id: targetId, input },
-				} = edges[edgeId]
-				delete edges[edgeId]
-				const target = nodes[targetId]
-				nodes[targetId] = {
-					...target,
-					inputs: { ...target.inputs, [input]: null },
-				}
-			}
-		}
-
-		delete nodes[id]
-
-		const focus = isFocusEqual(state.focus, { element: "node", id })
-			? null
-			: state.focus
-
-		return { ...state, nodes, edges, focus }
+		return deleteNode(kinds, state, action)
 	} else if (action.type === "edge/create") {
 		const { id, source, target } = action
 		const edges = { ...state.edges }
@@ -205,4 +166,57 @@ function createInitialNode<S extends Schema>(
 	) as Record<GetOutputs<S>, string[]>
 
 	return { id, kind, position, inputs, outputs, params }
+}
+
+
+const createNode = <S extends Schema>(kinds: Kinds<S>, state: EditorState<S>, action: EditorAction<S>):  EditorState<S> => {
+	const { id, kind, position } = action
+	const nodes = { ...state.nodes }
+	nodes[id] = createInitialNode(kinds, id, kind, position)
+	return { ...state, nodes, focus: { element: "node", id } }
+}
+
+const deleteNode = <S extends Schema>(kinds: Kinds<S>, state: EditorState<S>, action: EditorAction<S>):  EditorState<S> => {
+	const { id } = action
+	const { kind, inputs, outputs } = state.nodes[id]
+	const nodes = { ...state.nodes }
+	const edges = { ...state.edges }
+	for (const input of forInputs(kinds, kind)) {
+		const edgeId: null | string = inputs[input]
+		if (edgeId !== null) {
+			const {
+				source: { id: sourceId, output },
+			} = edges[edgeId]
+			delete edges[edgeId]
+			const source = nodes[sourceId]
+			const outputs = new Set(source.outputs[output])
+			outputs.delete(edgeId)
+			nodes[sourceId] = {
+				...source,
+				outputs: { ...source.outputs, [output]: Array.from(outputs) },
+			}
+		}
+	}
+
+	for (const output of forOutputs(kinds, kind)) {
+		for (const edgeId of outputs[output]) {
+			const {
+				target: { id: targetId, input },
+			} = edges[edgeId]
+			delete edges[edgeId]
+			const target = nodes[targetId]
+			nodes[targetId] = {
+				...target,
+				inputs: { ...target.inputs, [input]: null },
+			}
+		}
+	}
+
+	delete nodes[id]
+
+	const focus = isFocusEqual(state.focus, { element: "node", id })
+		? null
+		: state.focus
+
+	return { ...state, nodes, edges, focus }
 }

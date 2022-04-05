@@ -9,13 +9,14 @@ import type {
 	GetParams
 } from "./state.js"
 
-import type { EditorAction } from "./actions.js"
+import type { EditorAction, CreateNodeAction, DeleteNodeAction } from "./actions.js"
 
 import {
 	forInputs,
 	forOutputs,
 	isFocusEqual,
 	signalInvalidType,
+	getKindFromArchetypeAction
 } from "./utils.js"
 
 export const makeReducer =
@@ -147,9 +148,11 @@ export function reduce<S extends Schema>(
 function createInitialNode<S extends Schema>(
 	kinds: Kinds<S>,
 	id: string,
-	kind: keyof S,
-	position: Position
+	archetype: string,
+	position: Position,
+	action: string
 ): Node<S> {
+	const kind = getKindFromArchetypeAction(kinds, archetype, action)
 
 	const params = Object.fromEntries(
 		Object.keys(kinds[kind].params).map((param: GetParams<S>) => [param, kinds[kind].params[param].value])
@@ -169,14 +172,14 @@ function createInitialNode<S extends Schema>(
 }
 
 
-const createNode = <S extends Schema>(kinds: Kinds<S>, state: EditorState<S>, action: EditorAction<S>):  EditorState<S> => {
-	const { id, kind, position } = action
+const createNode = <S extends Schema>(kinds: Kinds<S>, state: EditorState<S>, action: CreateNodeAction):  EditorState<S> => {
+	const { id, archetype, position } = action
 	const nodes = { ...state.nodes }
-	nodes[id] = createInitialNode(kinds, id, kind, position)
+	nodes[id] = createInitialNode(kinds, id, archetype, position, action.action)
 	return { ...state, nodes, focus: { element: "node", id } }
 }
 
-const deleteNode = <S extends Schema>(kinds: Kinds<S>, state: EditorState<S>, action: EditorAction<S>):  EditorState<S> => {
+const deleteNode = <S extends Schema>(kinds: Kinds<S>, state: EditorState<S>, action: DeleteNodeAction):  EditorState<S> => {
 	const { id } = action
 	const { kind, inputs, outputs } = state.nodes[id]
 	const nodes = { ...state.nodes }

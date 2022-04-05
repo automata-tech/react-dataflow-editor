@@ -18,29 +18,31 @@ export interface GraphParamProps<S extends Schema, K extends keyof S> {
 	kinds: Kinds<S>
 	node: Node<S, K>
 	param: GetParams<S, K>
+	label: string
 	paramUpdate: ParamUpdateBehaviour | undefined
 }
 
 export function GraphParam<S extends Schema, K extends keyof S>(
 	props: GraphParamProps<S, K>
 ) {
-	const value = props.node.params[props.param]?.value ?? ''
+	const {kinds, node, param, paramUpdate, label} = props
+	const value = node.params[param] ?? ''
 	const transform = useMemo(() => {
-		const index = getParamIndex(props.kinds, props.node.kind, props.param)
-		const offsetY = getParamOffsetY(index, props.kinds, props.node.kind)
+		const index = getParamIndex(kinds, node.kind, param)
+		const offsetY = getParamOffsetY(index, kinds, node.kind)
 		return toTranslate([0, offsetY])
 	}, [])
 
 	const onChange = (event: any) => {
-		if (props.paramUpdate && props.param !== null) {
-			props.paramUpdate(props.node, props.param, event.target.value)
+		if (paramUpdate && param !== null) {
+			paramUpdate(node, param, event.target.value)
 		}
 	  };
 
 	return (
 		<g
-			data-id={props.node.id}
-			data-input={props.param}
+			data-id={node.id}
+			data-input={param}
 			data-value={value}
 			transform={transform}
 		>
@@ -51,7 +53,7 @@ export function GraphParam<S extends Schema, K extends keyof S>(
 			fontSize={fontSize}
 			dominantBaseline="middle"
 			>
-			{props.param}
+			{label}
 		</text>
 		
 		{/* TODO: inherit width and height of bounding box from input element */}

@@ -1,11 +1,11 @@
 export type Position = { x: number; y: number }
-export type Param = { label: Readonly<string>; name: Readonly<string>; value: string }
+export type Port = {label: string, value: string}
 
-export type Kind<I extends string, P extends string, O extends string> = Readonly<{
+export type Kind<P extends string, I extends string, O extends string> = Readonly<{
 	name: string
-	inputs: Readonly<Record<I, null>>
-	params: Readonly<Record<P, null>>
-	outputs: Readonly<Record<O, null>>
+	inputs: Readonly<Record<I, Port>>
+	params: Readonly<Record<P, Port>>
+	outputs: Readonly<Record<O, Port>>
 	backgroundColor: string
 	img: string
 }>
@@ -32,7 +32,7 @@ export type Kinds<S extends Schema> = {
 }
 
 export type GetSchema<B extends Kinds<Schema>> = {
-	[k in keyof B]: B[k] extends Kind<infer P, infer I, infer O>
+	[k in keyof B]: B[k] extends Kind<infer I, infer P, infer O>
 		? { params: P; inputs: I; outputs: O }
 		: never
 }
@@ -42,7 +42,7 @@ export type Node<S extends Schema, K extends keyof S = keyof S> = {
 		id: string
 		kind: k
 		inputs: Record<GetInputs<S, k>, null | string>
-		params: Record<GetParams<S, k>, null | Param>
+		params: Record<GetParams<S, k>, null | string>
 		outputs: Record<GetOutputs<S, k>, string[]>
 		position: Position
 	}

@@ -20,15 +20,17 @@ export interface GraphOutputProps<S extends Schema, K extends keyof S> {
 	focus: Focus | null
 	node: Node<S, K>
 	output: GetOutputs<S, K>
+	label: string
 	outputDrag?: DragBehavior<SVGCircleElement, unknown, OutputDragSubject<S>>
 }
 
 export function GraphOutput<S extends Schema, K extends keyof S>(
 	props: GraphOutputProps<S, K>
 ) {
+	const { kinds, node, output, outputDrag, focus, label} = props
 	const transform = useMemo(() => {
-		const index = getOutputIndex(props.kinds, props.node.kind, props.output)
-		const offsetY = getPortOffsetY(index, props.kinds, props.node.kind)
+		const index = getOutputIndex(kinds, node.kind, output)
+		const offsetY = getPortOffsetY(index, kinds, node.kind)
 		return toTranslate([0, offsetY])
 	}, [])
 
@@ -36,22 +38,22 @@ export function GraphOutput<S extends Schema, K extends keyof S>(
 	const { backgroundColor } = context.options
 
 	const ref = useCallback((circle: SVGCircleElement | null) => {
-		if (circle !== null && props.outputDrag) {
-			select(circle).call(props.outputDrag)
+		if (circle !== null && outputDrag) {
+			select(circle).call(outputDrag)
 		}
 	}, [])
 
-	const values: string[] = props.node.outputs[props.output]
+	const values: string[] = node.outputs[output]
 	const isFocused =
-		props.focus !== null &&
-		props.focus.element === "edge" &&
-		values.includes(props.focus.id)
+		focus !== null &&
+		focus.element === "edge" &&
+		values.includes(focus.id)
 
 	return (
 		<g
 			className={isFocused ? "output focus" : "output"}
-			data-id={props.node.id}
-			data-output={props.output}
+			data-id={node.id}
+			data-output={output}
 			transform={transform}
 			strokeWidth={isFocused ? 3 : undefined}
 		>
@@ -62,7 +64,7 @@ export function GraphOutput<S extends Schema, K extends keyof S>(
 				dominantBaseline="middle"
 				fontSize={fontSize}
 			>
-				{props.output}
+				{label}
 			</text>
 			<circle
 				ref={ref}

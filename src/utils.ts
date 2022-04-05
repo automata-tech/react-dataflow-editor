@@ -12,6 +12,7 @@ import type {
 	Source,
 	Focus,
 	Node,
+	Port
 } from "./state.js"
 import type { CanvasContext } from "./context.js"
 
@@ -125,11 +126,11 @@ export function getParamOffsetY<S extends Schema>(index: number, kinds: Kinds<S>
 }
 
 const keyIndexCache = new WeakMap<
-	Record<string, null>,
+	Record<string, Port>,
 	Record<string, number>
 >()
 
-function getKeyIndex(ports: Record<string, null>, name: string): number {
+function getKeyIndex(ports: Record<string, Port>, name: string): number {
 	const indices = keyIndexCache.get(ports)
 	if (indices !== undefined) {
 		return indices[name]

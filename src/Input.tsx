@@ -22,6 +22,7 @@ export interface GraphInputProps<S extends Schema, K extends keyof S> {
 	kinds: Kinds<S>
 	focus: Focus | null
 	node: Node<S, K>
+	label: string
 	input: GetInputs<S, K>
 	inputDrag?: DragBehavior<SVGCircleElement, unknown, InputDragSubject<S>>
 }
@@ -29,9 +30,10 @@ export interface GraphInputProps<S extends Schema, K extends keyof S> {
 export function GraphInput<S extends Schema, K extends keyof S>(
 	props: GraphInputProps<S, K>
 ) {
+	const { kinds, node, input, inputDrag, focus, label } = props
 	const transform = useMemo(() => {
-		const index = getInputIndex(props.kinds, props.node.kind, props.input)
-		const offsetY = getPortOffsetY(index, props.kinds, props.node.kind)
+		const index = getInputIndex(kinds, node.kind, input)
+		const offsetY = getPortOffsetY(index, kinds, node.kind)
 		return toTranslate([0, offsetY])
 	}, [])
 
@@ -39,12 +41,12 @@ export function GraphInput<S extends Schema, K extends keyof S>(
 	const { backgroundColor } = context.options
 
 	const ref = useCallback((circle: SVGCircleElement | null) => {
-		if (circle !== null && props.inputDrag) {
-			select(circle).call(props.inputDrag)
+		if (circle !== null && inputDrag) {
+			select(circle).call(inputDrag)
 		}
 	}, [])
 
-	const value: string | null = props.node.inputs[props.input]
+	const value: string | null = node.inputs[input]
 	const handleClick = useCallback(
 		(event: React.MouseEvent<SVGCircleElement>) => {
 			event.stopPropagation()
@@ -56,15 +58,15 @@ export function GraphInput<S extends Schema, K extends keyof S>(
 	)
 
 	const isFocused =
-		props.focus !== null &&
-		props.focus.element === "edge" &&
-		props.focus.id === value
+		focus !== null &&
+		focus.element === "edge" &&
+		focus.id === value
 
 	return (
 		<g
 			className={isFocused ? "input focus" : "input"}
-			data-id={props.node.id}
-			data-input={props.input}
+			data-id={node.id}
+			data-input={input}
 			data-value={value}
 			transform={transform}
 			strokeWidth={isFocused ? 3 : undefined}
@@ -75,7 +77,7 @@ export function GraphInput<S extends Schema, K extends keyof S>(
 				dominantBaseline="middle"
 				fontSize={fontSize}
 			>
-				{props.input}
+				{label}
 			</text>
 			<circle
 				ref={ref}

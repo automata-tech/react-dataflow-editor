@@ -44,6 +44,20 @@ export function Editor<S extends Schema>(props: EditorProps<S>) {
 		}
 	}, [])
 
+	let usedKinds = new Set<keyof S>()
+
+	const uniqueKinds = Object.keys(props.kinds).reduce(
+		(prev, curr) => {
+			const group = props.kinds[curr].group
+			if (usedKinds.has(group)) {
+				return prev
+			}
+			usedKinds.add(group)
+			return {...prev, [curr]: props.kinds[curr]}
+		},
+		{}
+	)
+
 	return (
 		<CanvasContext.Provider value={context}>
 			<DndProvider backend={HTML5Backend}>
@@ -51,7 +65,7 @@ export function Editor<S extends Schema>(props: EditorProps<S>) {
 					className="editor"
 					style={{ display: "flex", flexDirection: "column" }}
 				>
-					<Toolbox kinds={props.kinds} />
+					<Toolbox kinds={uniqueKinds} />
 					<Canvas kinds={props.kinds} state={props.state} dispatch={dispatch} />
 				</div>
 			</DndProvider>

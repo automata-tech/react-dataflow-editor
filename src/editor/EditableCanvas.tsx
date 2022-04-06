@@ -25,13 +25,13 @@ export interface CanvasProps<S extends Schema> {
 export function Canvas<S extends Schema>(props: CanvasProps<S>) {
 	const context = useContext(CanvasContext)
 
-	const [{}, drop] = useDrop<{ kind: keyof S }, void, {}>({
+	const [{}, drop] = useDrop<{ group: string, action: string }, void, {}>({
 		accept: ["node"],
-		drop({ kind }, monitor) {
+		drop({ group, action }, monitor) {
 			const { x, y } = monitor.getSourceClientOffset()!
 			const { left, top } = context.svgRef.current!.getBoundingClientRect()
 			const position = snap(context, [x - left, y - top])
-			props.dispatch(createNode(kind, position))
+			props.dispatch(createNode(group, position, action))
 		},
 	})
 

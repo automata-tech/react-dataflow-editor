@@ -297,3 +297,15 @@ export function getCanvasWidth<S extends Schema>(
 	return canvasPaddingRight + options.unit * max
 }
 
+export const getKindFromArchetypeAction = <S extends Schema>(kinds: Kinds<S>, archetype: string, action: string) => {
+	const matches = Object.keys(kinds).filter(kind=>{
+		return kinds[kind].group.archetype === archetype && kinds[kind].group.action === action
+	})
+	if (matches.length === 0) {
+		throw new Error(`No node archetype found for ${archetype}/${action}`)
+	}
+	if (matches.length > 1) {
+		throw new Error(`Multiple node archetypes found for ${archetype}/${action}`)
+	}
+	return matches[0]
+}

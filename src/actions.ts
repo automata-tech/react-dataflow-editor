@@ -2,7 +2,7 @@ import { customAlphabet } from "nanoid"
 import type { Focus, Position, Schema, Source, Target, GetParams } from "./state.js"
 
 export type EditorAction<S extends Schema> =
-	| CreateNodeAction<S>
+	| CreateNodeAction
 	| MoveNodeAction
 	| ModifyParamAction
 	| DeleteNodeAction
@@ -12,23 +12,26 @@ export type EditorAction<S extends Schema> =
 	| FocusAction
 	| UpdateNodeAction
 
-export type CreateNodeAction<S extends Schema> = {
+export type CreateNodeAction = {
 	type: "node/create"
 	id: string
-	kind: keyof S
+	archetype: string
 	position: Position
+	action: string
 }
 
 const nanoid = customAlphabet('1234567890abcdef', 10)
 
-export const createNode = <S extends Schema>(
-	kind: keyof S,
-	position: Position
-): CreateNodeAction<S> => ({
+export const createNode = (
+	archetype: string,
+	position: Position,
+	action: string
+): CreateNodeAction => ({
 	type: "node/create",
-	id: `${String(kind).split('.')[0]}_${nanoid()}`,
-	kind,
+	id: `${archetype}_${nanoid()}`,
+	archetype,
 	position,
+	action
 })
 
 export type ModifyParamAction = {

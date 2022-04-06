@@ -37,8 +37,11 @@ export function reduce<S extends Schema>(
 		const nodes = { ...state.nodes, [id]: node }
 		return { ...state, nodes, focus: { element: "node", id } }
 	} else if (action.type === "node/update") {
-		// TODO: implement
-		return state
+		const { id, action: groupAction } = action
+		const { kind, position } = state.nodes[id]
+		const archetype = kinds[kind].group.archetype
+		const newEditorState = deleteNode(kinds, state, { type: "node/delete", id })
+		return createNode(kinds, newEditorState, {type: "node/create", id: id, archetype: archetype, position: position, action: groupAction})
 	} else if (action.type === "node/param") {
 		const { id, param }: {id: string, param: GetParams<S>} = action
 		const params = state.nodes[id].params

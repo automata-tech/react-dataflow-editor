@@ -10,6 +10,7 @@ export type EditorAction<S extends Schema> =
 	| MoveEdgeAction<S>
 	| DeleteEdgeAction
 	| FocusAction
+	| UpdateNodeAction
 
 export type CreateNodeAction<S extends Schema> = {
 	type: "node/create"
@@ -110,4 +111,16 @@ export type FocusAction = {
 export const focus = (subject: Focus | null): FocusAction => ({
 	type: "focus",
 	subject,
+})
+
+export type UpdateNodeAction = {
+	type: "node/update"
+	id: string
+	action: string
+}
+
+export const updateNode = (id: string, action: string): UpdateNodeAction => ({
+	type: "node/update",
+	id,
+	action
 })

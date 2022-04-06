@@ -37,10 +37,8 @@ export function reduce<S extends Schema>(
 		const nodes = { ...state.nodes, [id]: node }
 		return { ...state, nodes, focus: { element: "node", id } }
 	} else if (action.type === "node/update") {
-		const { id, position } = action
-		const node = { ...state.nodes[id], position }
-		const nodes = { ...state.nodes, [id]: node }
-		return { ...state, nodes, focus: { element: "node", id } }
+		// TODO: implement
+		return state
 	} else if (action.type === "node/param") {
 		const { id, param }: {id: string, param: GetParams<S>} = action
 		const params = state.nodes[id].params
@@ -173,9 +171,9 @@ function createInitialNode<S extends Schema>(
 
 
 const createNode = <S extends Schema>(kinds: Kinds<S>, state: EditorState<S>, action: CreateNodeAction):  EditorState<S> => {
-	const { id, archetype, position } = action
+	const { id, archetype, position, action: groupAction } = action
 	const nodes = { ...state.nodes }
-	nodes[id] = createInitialNode(kinds, id, archetype, position, action.action)
+	nodes[id] = createInitialNode(kinds, id, archetype, position, groupAction)
 	return { ...state, nodes, focus: { element: "node", id } }
 }
 

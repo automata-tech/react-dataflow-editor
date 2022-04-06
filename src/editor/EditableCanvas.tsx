@@ -10,9 +10,8 @@ import { GraphEdge } from "../Edge.js"
 import { makeInputDragBehavior } from "../inputDrag.js"
 import { makeOutputDragBehavior } from "../outputDrag.js"
 import { makeNodeDragBehavior } from "../nodeDrag.js"
-import { makenodeUpdateBehaviour } from "../nodeUpdate.js"
+import { makeNodeUpdateBehaviour } from "../nodeUpdate.js"
 import { makeParamUpdateBehavior } from "../paramUpdate"
-
 import { getCanvasWidth, nodeWidth, portRadius, snap } from "../utils.js"
 import { CanvasContext } from "../context.js"
 import { useStyles } from "../styles.js"
@@ -55,7 +54,7 @@ export function Canvas<S extends Schema>(props: CanvasProps<S>) {
 	}, [])
 
 	const nodeUpdate = useMemo(() => {
-		return makenodeUpdateBehaviour(context, props.kinds, props.dispatch)
+		return makeNodeUpdateBehaviour(context, props.kinds, props.dispatch)
 	}, [])
 
 	const paramUpdate = useMemo(() => {

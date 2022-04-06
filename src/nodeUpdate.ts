@@ -1,11 +1,10 @@
-import type { Schema, Kinds, Node, GetParams } from "./state.js"
-
+import type { Schema, Kinds, Node } from "./state.js"
 import { CanvasContext } from "./context.js"
 import { EditorAction, updateNode } from "./actions.js"
 
 export type NodeUpdateBehaviour = <S extends Schema>(node: Node<S>, action: string) => void
 
-export function makenodeUpdateBehaviour<S extends Schema>(
+export function makeNodeUpdateBehaviour<S extends Schema>(
 	context: CanvasContext,
 	kinds: Kinds<S>,
 	dispatch: (action: EditorAction<S>) => void

@@ -47,6 +47,7 @@ export function GraphOutput<S extends Schema, K extends keyof S>(
 	const isFocused =
 		focus !== null &&
 		focus.element === "edge" &&
+		values &&
 		values.includes(focus.id)
 
 	return (

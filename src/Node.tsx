@@ -10,7 +10,7 @@ import {
 	makeClipPath,
 	nodeHeaderHeight,
 	nodeMarginX,
-	nodeWidth,
+	getNodeWidth,
 	place,
 	toTranslate,
 	dropDownHeight,
@@ -48,6 +48,7 @@ export function GraphNode<S extends Schema>(props: GraphNodeProps<S>) {
 	const allKindsFromOneGroup = Object.keys(props.kinds).filter(k => props.kinds[k].group.archetype === group.archetype)
 
 	const clipPath = useMemo(() => makeClipPath(props.kinds, props.node.kind), [])
+	const nodeWidth = useMemo(()=>(getNodeWidth(props.kinds, props.node.kind)), [])
 
 	const context = useContext(CanvasContext)
 
@@ -68,6 +69,8 @@ export function GraphNode<S extends Schema>(props: GraphNodeProps<S>) {
 	  };
 
 	const transform = toTranslate(place(context, props.node.position))
+	const outputTransform = toTranslate([nodeWidth, 0])
+
 	const isFocused =
 		props.focus !== null &&
 		props.focus.element === "node" &&
@@ -136,7 +139,7 @@ export function GraphNode<S extends Schema>(props: GraphNodeProps<S>) {
 					/>
 				))}
 			</g>
-			<g className="outputs" transform="translate(156, 0)">
+			<g className="outputs" transform={outputTransform}>
 				{Object.keys(outputs).map((output: GetOutputs<S, keyof S>) => (
 					<GraphOutput<S, keyof S>
 						key={output}

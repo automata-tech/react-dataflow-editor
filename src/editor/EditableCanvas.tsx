@@ -12,7 +12,7 @@ import { makeOutputDragBehavior } from "../outputDrag.js"
 import { makeNodeDragBehavior } from "../nodeDrag.js"
 import { makeNodeUpdateBehaviour } from "../nodeUpdate.js"
 import { makeParamUpdateBehavior } from "../paramUpdate"
-import { getCanvasWidth, nodeWidth, portRadius, snap } from "../utils.js"
+import { getCanvasWidth, getNodeWidth, portRadius, snap } from "../utils.js"
 import { CanvasContext } from "../context.js"
 import { useStyles } from "../styles.js"
 
@@ -114,7 +114,7 @@ export function Canvas<S extends Schema>(props: CanvasProps<S>) {
 							<text
 								stroke="none"
 								fill={borderColor}
-								x={nodeWidth - 20}
+								x={getNodeWidth(props.kinds, node.kind) - 20}
 								y={18}
 								cursor="pointer"
 								onClick={() => props.dispatch(deleteNode(node.id))}

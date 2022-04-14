@@ -17,19 +17,19 @@ import type {
 import type { CanvasContext } from "./context.js"
 
 export const fontSize = 15
-export const nodeWidth = 156
+export const minNodeWidth = 156
 export const nodeHeaderHeight = 24
 export const portRadius = 12
 export const portMargin = 12
 export const portHeight = portRadius * 2 + portMargin * 2
 export const canvasPaddingRight = 480
 export const paramHeight = 24
-export const paramWidth = nodeWidth / 3
+export const paramWidth = minNodeWidth / 3
 export const paramMargin = 10
 export const paramTextInputMargin = 10
 export const paramHeightWithMargin = paramHeight + fontSize + paramTextInputMargin + paramMargin
 export const dropDownHeight = 24
-export const dropDownWidth = nodeWidth * 0.9
+export const dropDownWidth = minNodeWidth * 0.9
 export const dropDownMarginY = 12
 export const dropDownMarginX = 6
 export const imageWidth = 100
@@ -67,6 +67,28 @@ const getNodeHeight = <S extends Schema>(
 	return Math.max(inputSide, outputSide)
 }
 
+// TODO: refactor utils to use class so this only needs to be calculated once
+export const getNodeWidth = <S extends Schema>(
+	kinds: Kinds<S>,
+	kind: keyof S) => {
+		const { inputs, outputs, params } = kinds[kind]
+		type PortTypes = typeof inputs | typeof outputs | typeof params
+		const getMaxCharCount = (portObj: PortTypes) => {
+			if (Object.keys(portObj).length === 0) {
+				return 0
+			}
+			return Object.keys(portObj).reduce((count, i: keyof PortTypes) => Math.max(count, portObj[i].label.length), 0)
+		}
+		const maxInputLabelCharCount = getMaxCharCount(inputs)
+		const maxOutputLabelCharCount = getMaxCharCount(outputs)
+		const maxParamsLabelCharCount = getMaxCharCount(params)
+
+		const scalingFactor = 0.1 // TODO: could work out the pad width more precisely?
+		const padWidth = Math.max(maxInputLabelCharCount + maxOutputLabelCharCount, maxParamsLabelCharCount + maxOutputLabelCharCount) * fontSize * scalingFactor
+
+	return Math.round(minNodeWidth + padWidth)
+}
+
 export function makeClipPath<S extends Schema>(
 	kinds: Kinds<S>,
 	kind: keyof S,
@@ -84,7 +106,7 @@ export function makeClipPath<S extends Schema>(
 		path.push(inputPort)
 	}
 
-	path.push(`V ${nodeHeight} H ${nodeWidth} V 0 Z`)
+	path.push(`V ${nodeHeight} H ${getNodeWidth(kinds, kind)} V 0 Z`)
 
 	return path.join(" ")
 }
@@ -179,7 +201,7 @@ export function getOutputOffset<S extends Schema, K extends keyof S>(
 	output: GetOutputs<S, K>
 ): [number, number] {
 	const index = getOutputIndex(kinds, kind, output)
-	return [nodeWidth, getPortOffsetY(index, kinds, kind)]
+	return [getNodeWidth(kinds, kind), getPortOffsetY(index, kinds, kind)]
 }
 
 export function getSourcePosition<S extends Schema>(

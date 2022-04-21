@@ -1,5 +1,6 @@
 export interface Options {
 	borderColor: string
+	textColor: string
 	backgroundColor: string
 	unit: number
 	height: number
@@ -14,6 +15,7 @@ export interface Options {
 
 export const defaultOptions: Options = {
 	borderColor: "dimgray",
+	textColor: "black",
 	backgroundColor: "lightgray",
 	unit: 20,
 	height: 100,
